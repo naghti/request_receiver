@@ -1,25 +1,32 @@
+require('dotenv').config()
 const express = require("express");
-const cors = require('cors')
-const https = require("https")
-const app = express()
-const fs = require('fs')
-const path = require('path')
+const cors = require('cors') // Required for CORS configuration
+const path = require("path");
+const fileUpload = require('express-fileupload')
 const PORT = process.env.PORT || 5000
+const requestIp = require('request-ip');
 
+const app = express()
+
+// **CORS configuration:**
 app.use(cors());
+
 app.use(express.json())
+app.use(express.static(path.resolve(__dirname, 'static')))
+app.use(fileUpload({}))
+app.use(requestIp.mw());
 app.set('trust proxy', true)
-app.use('/', f)
 
-function f (req, res) {
-  console.log(req)
-
+app.use('/api', (req, res) => {
   res.send("hello")
+})
+
+const start = async () => {
+  try {
+    app.listen(PORT, () => console.log('SERVER STARTED ON PORT ' + PORT))
+  } catch (e) {
+    console.log(e)
+  }
 }
 
-const sslServer = https.createServer({
-  key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-}, app)
-
-sslServer.listen(PORT, () => console.log("server listen on " + PORT))
+start()
