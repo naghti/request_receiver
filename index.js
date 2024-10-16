@@ -5,6 +5,8 @@ const path = require("path");
 const fileUpload = require('express-fileupload')
 const PORT = process.env.PORT || 5000
 const requestIp = require('request-ip');
+const https = require("https");
+const fs = require("fs");
 
 const app = express()
 
@@ -21,12 +23,20 @@ app.use('/api', (req, res) => {
   res.send("hello")
 })
 
-const start = async () => {
-  try {
-    app.listen(PORT, () => console.log('SERVER STARTED ON PORT ' + PORT))
-  } catch (e) {
-    console.log(e)
-  }
-}
 
-start()
+const sslServer = https.createServer({
+  key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+  cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+}, app)
+
+sslServer.listen(PORT, () => console.log("server " + PORT))
+
+// const start = async () => {
+//   try {
+//     app.listen(PORT, () => console.log('SERVER STARTED ON PORT ' + PORT))
+//   } catch (e) {
+//     console.log(e)
+//   }
+// }
+
+// start()
