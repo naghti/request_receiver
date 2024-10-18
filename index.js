@@ -20,6 +20,7 @@ app.use(requestIp.mw());
 app.set('trust proxy', true)
 
 app.use('/api', (req, res) => {
+  console.log(req.query)
   res.send("hello")
 })
 
